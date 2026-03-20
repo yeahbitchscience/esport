@@ -1,0 +1,223 @@
+{
+    "_description": "Maps parent organizations to their sub-teams, academy teams, and affiliates. Used for AFFILIATE_CONFUSION detection. Keys are the parent org name, values contain the main team and all sub-teams. Add new entries as orgs create sub-teams.",
+
+    "Falcons": {
+        "main": "Riyadh Falcons",
+        "affiliates": [
+            "Falcons Academy",
+            "Falcons Academy Green",
+            "Falcons Esport",
+            "Las Vegas Falcons"
+        ],
+        "games": ["call-of-duty", "valorant"]
+    },
+
+    "Fnatic": {
+        "main": "Fnatic",
+        "affiliates": [
+            "Fnatic Rising",
+            "Fnatic TQ",
+            "Fnatic Academy"
+        ],
+        "games": ["cs2", "valorant", "league-of-legends", "dota2"]
+    },
+
+    "T1": {
+        "main": "T1",
+        "affiliates": [
+            "T1 Academy",
+            "T1 Challengers",
+            "T1 Youth"
+        ],
+        "games": ["league-of-legends", "valorant", "dota2"]
+    },
+
+    "Cloud9": {
+        "main": "Cloud9",
+        "affiliates": [
+            "Cloud9 Academy",
+            "Cloud9 Challengers",
+            "Cloud9 White",
+            "Cloud9 Blue"
+        ],
+        "games": ["cs2", "valorant", "league-of-legends"]
+    },
+
+    "G2 Esports": {
+        "main": "G2 Esports",
+        "affiliates": [
+            "G2 Academy",
+            "G2 Arctic",
+            "G2 Hel"
+        ],
+        "games": ["cs2", "valorant", "league-of-legends"]
+    },
+
+    "Team Vitality": {
+        "main": "Team Vitality",
+        "affiliates": [
+            "Vitality.Bee",
+            "Team Vitality Academy",
+            "Vitality Academy"
+        ],
+        "games": ["cs2", "valorant", "league-of-legends"]
+    },
+
+    "Natus Vincere": {
+        "main": "Natus Vincere",
+        "affiliates": [
+            "NAVI Junior",
+            "Na'Vi Junior",
+            "NAVI Academy",
+            "Monte (former NAVI Junior)"
+        ],
+        "games": ["cs2", "valorant", "dota2"]
+    },
+
+    "Team Liquid": {
+        "main": "Team Liquid",
+        "affiliates": [
+            "Team Liquid Academy",
+            "Liquid Academy",
+            "Team Liquid Brazil"
+        ],
+        "games": ["cs2", "valorant", "league-of-legends", "dota2"]
+    },
+
+    "100 Thieves": {
+        "main": "100 Thieves",
+        "affiliates": [
+            "100 Thieves Academy",
+            "100 Thieves Next",
+            "100T Next"
+        ],
+        "games": ["valorant", "league-of-legends", "call-of-duty"]
+    },
+
+    "Gen.G": {
+        "main": "Gen.G",
+        "affiliates": [
+            "Gen.G Scholars",
+            "Gen.G Academy",
+            "Gen.G Global Academy"
+        ],
+        "games": ["league-of-legends", "valorant"]
+    },
+
+    "DRX": {
+        "main": "DRX",
+        "affiliates": [
+            "DRX Academy",
+            "DRX Challengers"
+        ],
+        "games": ["league-of-legends", "valorant"]
+    },
+
+    "LOUD": {
+        "main": "LOUD",
+        "affiliates": [
+            "LOUD Academy",
+            "LOUD Rising"
+        ],
+        "games": ["valorant", "league-of-legends"]
+    },
+
+    "FaZe Clan": {
+        "main": "FaZe Clan",
+        "affiliates": [
+            "FaZe Academy",
+            "FaZe Clan Youth"
+        ],
+        "games": ["cs2", "call-of-duty", "valorant"]
+    },
+
+    "Karmine Corp": {
+        "main": "Karmine Corp",
+        "affiliates": [
+            "KC Academy",
+            "Karmine Corp Academy",
+            "KC Blue"
+        ],
+        "games": ["league-of-legends", "valorant"]
+    },
+
+    "MOUZ": {
+        "main": "MOUZ",
+        "affiliates": [
+            "MOUZ NXT",
+            "MOUZ Academy",
+            "mousesports NXT"
+        ],
+        "games": ["cs2"]
+    },
+
+    "BIG": {
+        "main": "BIG",
+        "affiliates": [
+            "BIG Academy",
+            "BIG EQUIPA"
+        ],
+        "games": ["cs2"]
+    },
+
+    "Astralis": {
+        "main": "Astralis",
+        "affiliates": [
+            "Astralis Talent",
+            "Future Group (Astralis org)"
+        ],
+        "games": ["cs2", "league-of-legends"]
+    },
+
+    "Evil Geniuses": {
+        "main": "Evil Geniuses",
+        "affiliates": [
+            "EG Academy",
+            "Evil Geniuses Academy",
+            "EG Prodigies"
+        ],
+        "games": ["cs2", "valorant", "league-of-legends", "dota2"]
+    },
+
+    "NRG Esports": {
+        "main": "NRG Esports",
+        "affiliates": [
+            "NRG Academy",
+            "NRG Rising"
+        ],
+        "games": ["valorant", "call-of-duty"]
+    },
+
+    "Sentinels": {
+        "main": "Sentinels",
+        "affiliates": [
+            "Sentinels Academy"
+        ],
+        "games": ["valorant"]
+    },
+
+    "Paper Rex": {
+        "main": "Paper Rex",
+        "affiliates": [
+            "Paper Rex Academy"
+        ],
+        "games": ["valorant"]
+    },
+
+    "SK Gaming": {
+        "main": "SK Gaming",
+        "affiliates": [
+            "SK Gaming Prime",
+            "SK Gaming Academy"
+        ],
+        "games": ["league-of-legends"]
+    },
+
+    "Heroic": {
+        "main": "Heroic",
+        "affiliates": [
+            "Heroic Academy"
+        ],
+        "games": ["cs2"]
+    }
+}

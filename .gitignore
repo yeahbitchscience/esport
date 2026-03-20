@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Environment
+.env
+.venv/
+venv/
+
+# Logs
+logs/
+*.log
+
+# Database
+data/bot.db
+data/bot.db-shm
+data/bot.db-wal
+
+# IDE
+.vscode/
+.idea/
+
+# Test output
+test_output.txt
+tests/out*.txt
+tests/output*.txt
+
+# OS
+.DS_Store
+Thumbs.db
