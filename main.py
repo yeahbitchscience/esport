@@ -9,30 +9,8 @@ Usage:
 import sys
 import traceback
 
-import threading
-from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from logger import log
-
-class KeepaliveHandler(BaseHTTPRequestHandler):
-    """Simple HTTP handler to satisfy Render's port checker."""
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/plain')
-        self.end_headers()
-        self.wfile.write(b"Bot is actively polling Polymarket.")
-
-    def log_message(self, format, *args):
-        pass  # Completely suppress standard HTTP logging to keep console clean
-
-def start_keepalive_server():
-    """Boots a background HTTP server on the PORT env variable."""
-    import os
-    port = int(os.getenv("PORT", 10000))
-    server = HTTPServer(('0.0.0.0', port), KeepaliveHandler)
-    thread = threading.Thread(target=server.serve_forever, daemon=True)
-    thread.start()
-    log.info(f"Keepalive dummy server successfully bound to port {port}")
 
 
 def main():
@@ -54,9 +32,6 @@ def main():
 
     bot = None
     try:
-        # Start the dummy Web Service server to trick Render into keeping the bot alive
-        start_keepalive_server()
-        
         bot = EsportsAnomalyBot(dry_run=dry_run)
         bot.start()
     except KeyboardInterrupt:

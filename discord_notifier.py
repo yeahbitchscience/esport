@@ -51,33 +51,22 @@ class DiscordNotifier:
 
     def _send_webhook(self, webhook_url: str, embeds: List[DiscordEmbed] = None,
                       content: str = None) -> bool:
-        """Send a webhook message robustly bypassing Cloudflare."""
+        """Send a webhook message natively."""
         if not webhook_url:
             log.warning("Discord webhook URL not configured — skipping notification")
             return False
 
         try:
-            from curl_cffi import requests as cffi_requests
+            from discord_webhook import DiscordWebhook
+            webhook = DiscordWebhook(url=webhook_url, content=content, rate_limit_retry=True)
             
-            # Rewrite discord.com to canary.discord.com to bypass aggressive Render IP Cloudflare blocks
-            if "discord.com" in webhook_url and "canary.discord.com" not in webhook_url:
-                webhook_url = webhook_url.replace("discord.com", "canary.discord.com")
-            
-            payload = {}
-            if content:
-                payload["content"] = content
             if embeds:
-                # DiscordEmbed stores its JSON payload natively in __dict__, but we must strip None values
-                payload["embeds"] = [
-                    {k: v for k, v in e.__dict__.items() if v is not None and v != []}
-                    for e in embeds
-                ]
-                
-            session = cffi_requests.Session(impersonate="chrome")
-            response = session.post(webhook_url, json=payload, timeout=10)
+                for match_embed in embeds:
+                    webhook.add_embed(match_embed)
+                    
+            response = webhook.execute()
             
             if response.status_code in (200, 204):
-                log.info("Discord alert sent successfully via cffi bypass")
                 return True
             else:
                 log.error(f"Discord webhook failed with HTTP {response.status_code}: {response.text[:200]}")
