@@ -63,7 +63,11 @@ class DiscordNotifier:
             if content:
                 payload["content"] = content
             if embeds:
-                payload["embeds"] = [e.to_dict() for e in embeds]
+                # DiscordEmbed stores its JSON payload natively in __dict__, but we must strip None values
+                payload["embeds"] = [
+                    {k: v for k, v in e.__dict__.items() if v is not None and v != []}
+                    for e in embeds
+                ]
                 
             session = cffi_requests.Session(impersonate="chrome")
             response = session.post(webhook_url, json=payload, timeout=10)
