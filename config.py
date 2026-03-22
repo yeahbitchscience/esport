@@ -94,6 +94,28 @@ LIQUIPEDIA_WIKIS = {
     "rainbow-six": "rainbowsix",
 }
 
+# ─── ESPN Sports API ────────────────────────────────────────────────────────
+ESPN_BASE = "https://site.api.espn.com/apis/site/v2/sports"
+ESPN_ENDPOINTS = {
+    "basketball": f"{ESPN_BASE}/basketball/nba/scoreboard",
+    "nba": f"{ESPN_BASE}/basketball/nba/scoreboard",
+    "ncaa-men's-basketball": f"{ESPN_BASE}/basketball/mens-college-basketball/scoreboard",
+    "wnba": f"{ESPN_BASE}/basketball/wnba/scoreboard",
+    "football": f"{ESPN_BASE}/football/nfl/scoreboard",
+    "nfl": f"{ESPN_BASE}/football/nfl/scoreboard",
+    "ncaa-football": f"{ESPN_BASE}/football/college-football/scoreboard",
+    "baseball": f"{ESPN_BASE}/baseball/mlb/scoreboard",
+    "mlb": f"{ESPN_BASE}/baseball/mlb/scoreboard",
+    "hockey": f"{ESPN_BASE}/hockey/nhl/scoreboard",
+    "nhl": f"{ESPN_BASE}/hockey/nhl/scoreboard",
+    "soccer": f"{ESPN_BASE}/soccer/eng.1/scoreboard", 
+    "premier-league": f"{ESPN_BASE}/soccer/eng.1/scoreboard",
+    "champions-league": f"{ESPN_BASE}/soccer/uefa.champions/scoreboard",
+    "la-liga": f"{ESPN_BASE}/soccer/esp.1/scoreboard",
+    "tennis": f"{ESPN_BASE}/tennis/atp/scoreboard",  # ATP default
+}
+ESPN_CACHE_TTL = 300  # 5 minutes
+
 LIQUIPEDIA_RATE_LIMIT = 2.0  # seconds between general requests
 LIQUIPEDIA_PARSE_RATE_LIMIT = 30.0  # seconds between parse requests
 LIQUIPEDIA_USER_AGENT = os.getenv(

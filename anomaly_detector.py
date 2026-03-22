@@ -34,9 +34,10 @@ class AnomalyFlag:
 class AnomalyDetector:
     """Runs all 14 anomaly detection filters against a market."""
 
-    def __init__(self, db: Database, liquipedia: LiquipediaClient):
+    def __init__(self, db: Database, liquipedia: LiquipediaClient, sports: 'SportsClient' = None):
         self.db = db
         self.lp = liquipedia
+        self.sports = sports
         self._team_aliases: Dict = {}
         self._disbanded_teams: Dict = {}
         self._org_affiliates: Dict = {}
@@ -189,7 +190,7 @@ class AnomalyDetector:
         """
         flags = []
         try:
-            lp_matches = self.lp.get_upcoming_matches(market.game, market.tournament)
+            lp_matches = self._get_gt_client(market.game).get_upcoming_matches(market.game, market.tournament)
             if not lp_matches:
                 return flags
 
@@ -291,7 +292,7 @@ class AnomalyDetector:
 
             # Also check Liquipedia for rename indicators
             try:
-                lp_info = self.lp.get_team_info(market.game, team_name)
+                lp_info = self._get_gt_client(market.game).get_team_info(market.game, team_name)
                 if lp_info.status == "renamed" and lp_info.renamed_to:
                     flags.append(AnomalyFlag(
                         flag_type="RENAMED_TEAM",
@@ -355,7 +356,7 @@ class AnomalyDetector:
 
             # Also check Liquipedia
             try:
-                lp_info = self.lp.get_team_info(market.game, team_name)
+                lp_info = self._get_gt_client(market.game).get_team_info(market.game, team_name)
                 if lp_info.status == "disbanded":
                     flags.append(AnomalyFlag(
                         flag_type="DISBANDED_TEAM",
@@ -386,7 +387,7 @@ class AnomalyDetector:
             return flags
 
         try:
-            lp_matches = self.lp.get_upcoming_matches(market.game, market.tournament)
+            lp_matches = self._get_gt_client(market.game).get_upcoming_matches(market.game, market.tournament)
             for team_name in [market.team_a, market.team_b]:
                 if not team_name:
                     continue
@@ -436,6 +437,12 @@ class AnomalyDetector:
     # Filter 4: WRONG_OPPONENT
     # ═════════════════════════════════════════════════════════════════════
 
+    def _get_gt_client(self, game: str):
+        """Returns the ground-truth client natively depending on the sport."""
+        if self.sports and game and game.lower() in config.ESPN_ENDPOINTS:
+            return self.sports
+        return self.lp
+        
     def _check_wrong_opponent(self, market: MarketInfo) -> List[AnomalyFlag]:
         """
         Check if team A is playing but against a different team B than listed.
@@ -443,7 +450,7 @@ class AnomalyDetector:
         """
         flags = []
         try:
-            lp_matches = self.lp.get_upcoming_matches(market.game, market.tournament)
+            lp_matches = self._get_gt_client(market.game).get_upcoming_matches(market.game, market.tournament)
             for lp_match in lp_matches:
                 # Find a match where one team matches but the opponent differs
                 for pm_team, pm_opponent in [
@@ -503,7 +510,7 @@ class AnomalyDetector:
             return flags
 
         try:
-            lp_matches = self.lp.get_upcoming_matches(market.game, market.tournament)
+            lp_matches = self._get_gt_client(market.game).get_upcoming_matches(market.game, market.tournament)
             for lp_match in lp_matches:
                 if not lp_match.scheduled_time:
                     continue
@@ -548,12 +555,12 @@ class AnomalyDetector:
                 if not team_name:
                     continue
 
-                lp_team = self.lp.fuzzy_match_team(market.game, team_name)
+                lp_team = self._get_gt_client(market.game).fuzzy_match_team(market.game, team_name)
                 if not lp_team:
                     continue
 
                 # Search for the team's next matches
-                lp_matches = self.lp.get_upcoming_matches(market.game)
+                lp_matches = self._get_gt_client(market.game).get_upcoming_matches(market.game)
                 for lp_match in lp_matches:
                     if not self._team_in_match(team_name, lp_match):
                         continue
@@ -608,7 +615,7 @@ class AnomalyDetector:
                 if not team_name:
                     continue
 
-                lp_roster = self.lp.get_team_roster(market.game, team_name)
+                lp_roster = self._get_gt_client(market.game).get_team_roster(market.game, team_name)
                 if not lp_roster:
                     continue
 
@@ -786,7 +793,7 @@ class AnomalyDetector:
 
                 # Check Liquipedia to see if the actual match is with an affiliate
                 try:
-                    lp_matches = self.lp.get_upcoming_matches(market.game, market.tournament)
+                    lp_matches = self._get_gt_client(market.game).get_upcoming_matches(market.game, market.tournament)
                     for lp_match in lp_matches:
                         lp_teams = [lp_match.team_a, lp_match.team_b]
                         for lp_team in lp_teams:
@@ -851,7 +858,7 @@ class AnomalyDetector:
                     continue
                 for other_game in other_games[:3]:  # Limit to avoid too many API calls
                     try:
-                        lp_matches = self.lp.get_upcoming_matches(other_game)
+                        lp_matches = self._get_gt_client(other_game).get_upcoming_matches(other_game)
                         for lp_match in lp_matches:
                             if not self._team_in_match(team_name, lp_match):
                                 continue

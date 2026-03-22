@@ -16,6 +16,7 @@ from anomaly_detector import AnomalyDetector
 from database import Database
 from discord_notifier import DiscordNotifier
 from liquipedia_client import LiquipediaClient
+from sports_client import SportsClient
 from logger import log
 from polymarket_client import MarketInfo, PolymarketClient
 from scoring import ScoringEngine, ScoringResult
@@ -38,7 +39,8 @@ class EsportsAnomalyBot:
         self.db = Database()
         self.polymarket = PolymarketClient()
         self.liquipedia = LiquipediaClient(self.db)
-        self.detector = AnomalyDetector(self.db, self.liquipedia)
+        self.sports = SportsClient()
+        self.detector = AnomalyDetector(self.db, self.liquipedia, self.sports)
         self.scorer = ScoringEngine()
         self.notifier = DiscordNotifier(self.db)
 
