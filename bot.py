@@ -30,6 +30,7 @@ class EsportsAnomalyBot:
         self._consecutive_failures = 0
         self._cycle_count = 0
         self._last_cache_refresh = 0.0
+        self._is_first_cycle = True
 
         # Initialize components
         log.info("Initializing Esports Anomaly Bot...")
@@ -105,24 +106,38 @@ class EsportsAnomalyBot:
         try:
             # Step 1: Fetch all open esports markets
             markets = self.polymarket.fetch_open_esports_markets()
-            if not markets:
-                log.warning("No esports markets found this cycle")
-                self._consecutive_failures += 1
-                if self._consecutive_failures >= config.CONSECUTIVE_FAILURE_ALERT_THRESHOLD:
-                    self.notifier.send_health_warning(
-                        self._consecutive_failures,
-                        "No esports markets returned from Polymarket"
-                    )
+
+            # Filter for new markets only
+            new_markets = []
+            for market in markets:
+                if not self.db.is_market_processed(market.market_id):
+                    new_markets.append(market)
+                    self.db.mark_market_processed(market.market_id)
+
+            if self._is_first_cycle:
+                log.info(f"Initial boot baseline set: {len(new_markets)} pre-existing open markets identified and explicitly ignored. Only new markets will be evaluated hereafter.")
+                self._is_first_cycle = False
+                
+                # Still do cache cleanup before retreating
+                self.db.cleanup_old_alerts()
+                self.db.cleanup_old_liquipedia_cache()
                 return
 
+            if not new_markets:
+                log.info("No new markets detected. Idling.")
+                self.db.cleanup_old_alerts()
+                self.db.cleanup_old_liquipedia_cache()
+                return
+
+            log.info(f"Processing {len(new_markets)} newly listed market(s) for anomalies...")
+
             self._consecutive_failures = 0
-            log.info(f"Fetched {len(markets)} markets")
 
             # Step 2: Check if we need to refresh caches
             self._maybe_refresh_caches()
 
             # Step 3: Run anomaly detection on each market
-            results = self._analyze_markets(markets)
+            results = self._analyze_markets(new_markets)
 
             # Step 4: Process results
             alerts_sent = 0

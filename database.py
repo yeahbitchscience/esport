@@ -84,6 +84,11 @@ class Database:
                 fetched_at REAL NOT NULL
             );
 
+            CREATE TABLE IF NOT EXISTS processed_markets (
+                market_id TEXT PRIMARY KEY,
+                processed_at REAL NOT NULL
+            );
+
             CREATE TABLE IF NOT EXISTS tournament_fingerprints (
                 tournament_key TEXT PRIMARY KEY,
                 game TEXT,
@@ -156,15 +161,33 @@ class Database:
     # ─── Alert History ──────────────────────────────────────────────────
 
     def is_alert_sent_recently(self, market_id: str, hours: int = None) -> bool:
-        """Check if an alert was sent for this market within the dedup window."""
+        """Check if an alert was sent recently for this market."""
         hours = hours or config.DEDUP_HOURS
-        cutoff = (datetime.now(timezone.utc) - timedelta(hours=hours)).isoformat()
+        cutoff = time.time() - (hours * 3600)
         cursor = self.conn.execute(
-            "SELECT COUNT(*) FROM alert_history WHERE market_id = ? AND alerted_at > ?",
-            (market_id, cutoff),
+            "SELECT 1 FROM alert_history WHERE market_id = ? AND alerted_at > ?",
+            (market_id, cutoff)
         )
-        count = cursor.fetchone()[0]
-        return count > 0
+        return cursor.fetchone() is not None
+
+    def mark_market_processed(self, market_id: str):
+        """Mark a market as processed so we never run anomaly detection on it again."""
+        try:
+            self.conn.execute(
+                "INSERT OR IGNORE INTO processed_markets (market_id, processed_at) VALUES (?, ?)",
+                (market_id, time.time())
+            )
+            self.conn.commit()
+        except sqlite3.Error as e:
+            log.error(f"Failed to record processed market {market_id}: {e}")
+
+    def is_market_processed(self, market_id: str) -> bool:
+        """Check if a market has already been processed previously."""
+        cursor = self.conn.execute(
+            "SELECT 1 FROM processed_markets WHERE market_id = ?",
+            (market_id,)
+        )
+        return cursor.fetchone() is not None
 
     def record_alert(
         self,
