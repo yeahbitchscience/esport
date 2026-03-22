@@ -184,7 +184,7 @@ class PolymarketClient:
         seen_ids = set()
         all_markets = []
 
-        for tag in config.ESPORTS_TAGS:
+        for tag in config.TARGET_TAGS:
             log.debug(f"Fetching markets with tag: {tag}")
 
             # Fetch events for this tag

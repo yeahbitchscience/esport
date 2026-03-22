@@ -46,8 +46,9 @@ GAMMA_EVENTS_ENDPOINT = f"{GAMMA_API_BASE}/events"
 GAMMA_MARKETS_ENDPOINT = f"{GAMMA_API_BASE}/markets"
 GAMMA_TAGS_ENDPOINT = f"{GAMMA_API_BASE}/tags"
 
-# Tags to scan — covers all major esports categories on Polymarket
-ESPORTS_TAGS = [
+# Tags to scan — covers all major esports and sports categories on Polymarket
+TARGET_TAGS = [
+    # Esports
     "esports",
     "gaming",
     "cs2", "counter-strike",
@@ -56,6 +57,18 @@ ESPORTS_TAGS = [
     "dota-2", "dota2",
     "call-of-duty", "cod",
     "overwatch", "ow",
+    # Traditional Sports
+    "sports",
+    "basketball", "nba", "ncaa-men's-basketball", "wnba",
+    "football", "nfl", "ncaa-football",
+    "baseball", "mlb",
+    "soccer", "premier-league", "champions-league", "la-liga",
+    "hockey", "nhl",
+    "mma", "ufc",
+    "boxing",
+    "tennis",
+    "golf",
+    "f1", "motorsports",
 ]
 
 # ─── Liquipedia ─────────────────────────────────────────────────────────────
