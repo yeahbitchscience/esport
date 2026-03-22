@@ -59,6 +59,10 @@ class DiscordNotifier:
         try:
             from curl_cffi import requests as cffi_requests
             
+            # Rewrite discord.com to canary.discord.com to bypass aggressive Render IP Cloudflare blocks
+            if "discord.com" in webhook_url and "canary.discord.com" not in webhook_url:
+                webhook_url = webhook_url.replace("discord.com", "canary.discord.com")
+            
             payload = {}
             if content:
                 payload["content"] = content
