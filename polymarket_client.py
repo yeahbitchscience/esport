@@ -190,7 +190,7 @@ class PolymarketClient:
             # Fetch events for this tag
             events = self._paginate(
                 config.GAMMA_EVENTS_ENDPOINT,
-                {"tag": tag, "active": "true", "closed": "false"},
+                {"tag_slug": tag, "active": "true", "closed": "false"},
                 limit=100,
                 max_items=1000,
             )
@@ -238,7 +238,7 @@ class PolymarketClient:
         params = {
             "active": "false",
             "closed": "true",
-            "tag": game if game else "esports",
+            "tag_slug": game if game else "esports",
         }
         events = self._paginate(config.GAMMA_EVENTS_ENDPOINT, params, limit=50, max_items=2000)
 
