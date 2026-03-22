@@ -150,6 +150,8 @@ class EsportsAnomalyBot:
                     else:
                         if self.notifier.send_anomaly_alert(result):
                             alerts_sent += 1
+                            # Stagger outbound alerts to prevent Discord API global IP rate limiting (429)
+                            time.sleep(2.0)
 
             # Step 5: Cleanup
             self.db.cleanup_old_alerts()
