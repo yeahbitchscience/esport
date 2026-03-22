@@ -118,7 +118,7 @@ class PolymarketClient:
                     log.error(f"Polymarket API request failed after {config.MAX_RETRIES} attempts: {url}")
                     return None
 
-    def _paginate(self, url: str, params: Dict = None, limit: int = 100, max_items: int = 2000) -> List[Dict]:
+    def _paginate(self, url: str, params: Dict = None, limit: int = 100, max_items: int = 20000) -> List[Dict]:
         """Fetch all pages from a paginated endpoint safely."""
         params = params or {}
         params["limit"] = min(limit, max_items)
@@ -192,7 +192,7 @@ class PolymarketClient:
                 config.GAMMA_EVENTS_ENDPOINT,
                 {"tag_slug": tag, "active": "true", "closed": "false"},
                 limit=100,
-                max_items=1000,
+                max_items=20000,
             )
 
             for event in events:
@@ -240,7 +240,7 @@ class PolymarketClient:
             "closed": "true",
             "tag_slug": game if game else "esports",
         }
-        events = self._paginate(config.GAMMA_EVENTS_ENDPOINT, params, limit=50, max_items=2000)
+        events = self._paginate(config.GAMMA_EVENTS_ENDPOINT, params, limit=50, max_items=20000)
 
         for event in events:
             event_slug = event.get("slug", "")
