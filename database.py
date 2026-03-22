@@ -233,6 +233,17 @@ class Database:
         except sqlite3.Error as e:
             log.error(f"Failed to cache {cache_key}: {e}")
 
+    def cleanup_old_liquipedia_cache(self, ttl: int = None):
+        """Remove expired liquipedia cache entries."""
+        ttl = ttl or config.LIQUIPEDIA_CACHE_TTL
+        cutoff = time.time() - ttl
+        try:
+            self.conn.execute("DELETE FROM liquipedia_cache WHERE fetched_at < ?", (cutoff,))
+            self.conn.commit()
+            log.debug("Cleaned up expired Liquipedia cache")
+        except sqlite3.Error as e:
+            log.error(f"Failed to cleanup Liquipedia cache: {e}")
+
     # ─── Tournament Fingerprints ────────────────────────────────────────
 
     def get_tournament_fingerprint(self, tournament_key: str) -> Optional[Dict]:
@@ -275,6 +286,16 @@ class Database:
             self.conn.commit()
         except sqlite3.Error as e:
             log.error(f"Failed to cache tournament {tournament_key}: {e}")
+
+    def cleanup_old_tournament_fingerprints(self):
+        """Remove expired tournament fingerprints."""
+        cutoff = time.time() - config.TOURNAMENT_REFRESH_INTERVAL
+        try:
+            self.conn.execute("DELETE FROM tournament_fingerprints WHERE fetched_at < ?", (cutoff,))
+            self.conn.commit()
+            log.debug("Cleaned up expired tournament fingerprints")
+        except sqlite3.Error as e:
+            log.error(f"Failed to cleanup tournament fingerprints: {e}")
 
     # ─── Utility ────────────────────────────────────────────────────────
 

@@ -93,8 +93,11 @@ class LiquipediaClient:
         for attempt in range(config.MAX_RETRIES):
             try:
                 resp = self.session.get(url, params=params, timeout=30)
-                resp.raise_for_status()
-                return resp.json()
+                try:
+                    resp.raise_for_status()
+                    return resp.json()
+                finally:
+                    resp.close()
             except requests.exceptions.RequestException as e:
                 wait = config.RETRY_BACKOFF_BASE ** (attempt + 1)
                 log.warning(f"Liquipedia API failed (attempt {attempt + 1}): {e}")

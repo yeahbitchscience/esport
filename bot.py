@@ -136,6 +136,7 @@ class EsportsAnomalyBot:
 
             # Step 5: Cleanup
             self.db.cleanup_old_alerts()
+            self.db.cleanup_old_liquipedia_cache()
 
             elapsed = time.time() - cycle_start
             log.info(
@@ -184,6 +185,7 @@ class EsportsAnomalyBot:
         log.info("Refreshing tournament caches...")
         self._last_cache_refresh = now
         self.detector.reload_data_files()
+        self.db.cleanup_old_tournament_fingerprints()
 
     def _handle_failure(self, error: Exception):
         """Handle consecutive failures with alerting."""
