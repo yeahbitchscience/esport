@@ -80,15 +80,21 @@ class LiquipediaClient:
                 time.sleep(wait)
             self._last_request_time = time.time()
 
-    def _get_api_url(self, game: str) -> str:
-        """Get the API URL for a specific game's wiki."""
-        wiki = config.LIQUIPEDIA_WIKIS.get(game.lower(), game.lower())
+    def _get_api_url(self, game: str) -> Optional[str]:
+        """Get the API URL for a specific game's wiki. Returns None if unmapped (e.g. traditional sports)."""
+        game_lower = game.lower()
+        if game_lower not in config.LIQUIPEDIA_WIKIS:
+            return None
+        wiki = config.LIQUIPEDIA_WIKIS[game_lower]
         return f"{config.LIQUIPEDIA_BASE}/{wiki}{config.LIQUIPEDIA_API_SUFFIX}"
 
     def _api_request(self, game: str, params: Dict, is_parse: bool = False) -> Optional[Dict]:
-        """Make a rate-limited API request."""
-        self._rate_limit(is_parse)
+        """Make a rate-limited API request, skipping silently if the wiki is unmapped."""
         url = self._get_api_url(game)
+        if not url:
+            return None
+        
+        self._rate_limit(is_parse)
 
         for attempt in range(config.MAX_RETRIES):
             try:
