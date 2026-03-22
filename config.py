@@ -13,11 +13,8 @@ POLL_INTERVAL_SECONDS = int(os.getenv("POLL_INTERVAL_SECONDS", "300"))  # 5 min
 
 # ─── Discord ────────────────────────────────────────────────────────────────
 # Discord webhooks for alerts
-DISCORD_WEBHOOK_URL = os.getenv(
-    "DISCORD_WEBHOOK_URL",
-    "https://discord.com/api/webhooks/1484367907029778432/OJUKZtVitPwrIAODGmUy8F3IOR3KPXvSTN2zOQw0RSR6rU4iVxJITjToI5YwCJ9zEolV"
-)
-DISCORD_ERROR_WEBHOOK_URL = os.getenv("DISCORD_ERROR_WEBHOOK_URL", DISCORD_WEBHOOK_URL)
+DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL", "") or "https://discord.com/api/webhooks/1484367907029778432/OJUKZtVitPwrIAODGmUy8F3IOR3KPXvSTN2zOQw0RSR6rU4iVxJITjToI5YwCJ9zEolV"
+DISCORD_ERROR_WEBHOOK_URL = os.getenv("DISCORD_ERROR_WEBHOOK_URL", "") or DISCORD_WEBHOOK_URL
 
 # ─── Alerting Thresholds ────────────────────────────────────────────────────
 ALERT_SCORE_THRESHOLD = int(os.getenv("ALERT_SCORE_THRESHOLD", "40"))
