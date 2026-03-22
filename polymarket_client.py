@@ -118,10 +118,10 @@ class PolymarketClient:
                     log.error(f"Polymarket API request failed after {config.MAX_RETRIES} attempts: {url}")
                     return None
 
-    def _paginate(self, url: str, params: Dict = None, limit: int = 100) -> List[Dict]:
+    def _paginate(self, url: str, params: Dict = None, limit: int = 100, max_items: int = 2000) -> List[Dict]:
         """Fetch all pages from a paginated endpoint safely."""
         params = params or {}
-        params["limit"] = limit
+        params["limit"] = min(limit, max_items)
         offset = 0
         all_results = []
         seen_item_ids = set()
@@ -171,6 +171,10 @@ class PolymarketClient:
                 params.pop("offset", None)
             else:
                 offset += limit
+                
+            if len(all_results) >= max_items:
+                log.warning(f"Pagination stopped early: reached hard limit of {max_items} items to preserve RAM.")
+                break
 
         return all_results
 
@@ -187,6 +191,8 @@ class PolymarketClient:
             events = self._paginate(
                 config.GAMMA_EVENTS_ENDPOINT,
                 {"tag": tag, "active": "true", "closed": "false"},
+                limit=100,
+                max_items=1000,
             )
 
             for event in events:
@@ -234,7 +240,7 @@ class PolymarketClient:
             "closed": "true",
             "tag": game if game else "esports",
         }
-        events = self._paginate(config.GAMMA_EVENTS_ENDPOINT, params, limit=50)
+        events = self._paginate(config.GAMMA_EVENTS_ENDPOINT, params, limit=50, max_items=2000)
 
         for event in events:
             event_slug = event.get("slug", "")
