@@ -119,14 +119,18 @@ class PolymarketClient:
                     return None
 
     def _paginate(self, url: str, params: Dict = None, limit: int = 100) -> List[Dict]:
-        """Fetch all pages from a paginated endpoint."""
+        """Fetch all pages from a paginated endpoint safely."""
         params = params or {}
         params["limit"] = limit
         offset = 0
         all_results = []
+        seen_item_ids = set()
 
         while True:
-            params["offset"] = offset
+            # Only set offset if we aren't using a cursor yet
+            if "cursor" not in params:
+                params["offset"] = offset
+                
             data = self._request(url, params)
             if data is None:
                 break
@@ -144,10 +148,29 @@ class PolymarketClient:
             if not results:
                 break
 
-            all_results.extend(results)
+            # Avoid infinite loops if API ignores offset/cursor and returns same page
+            new_items_found = False
+            for item in results:
+                item_id = str(item.get("id", item.get("conditionId", str(item))))
+                if item_id not in seen_item_ids:
+                    seen_item_ids.add(item_id)
+                    all_results.append(item)
+                    new_items_found = True
+
+            # If the API gave us items but we've seen them ALL before, break immediately
+            if not new_items_found:
+                log.debug("Pagination stopped: duplicate page detected (API likely ignores offset).")
+                break
+
             if len(results) < limit:
                 break
-            offset += limit
+                
+            # Setup next page parameters
+            if isinstance(data, dict) and data.get("next_cursor"):
+                params["cursor"] = data.get("next_cursor")
+                params.pop("offset", None)
+            else:
+                offset += limit
 
         return all_results
 
